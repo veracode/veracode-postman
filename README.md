@@ -41,11 +41,7 @@ Using [Veracode APIs](https://docs.veracode.com/r/c_gettingstarted) with Postman
 An example Postman collection is provided here. The Collection is a JSON package and includes the pre-request script as well as {{base_ur}} variables for production calls. Upload it into your Postman application by selecting Import and dragging the file into the File window. There is a call chaining example provided but it requires you to also set up an Environment (Environments → + to set up new → set created Environment to active with √) in order to save the output of the first request for use in subsequent requests. It also includes an example that could be used in a runner for repeated iterations over a json or csv file. -->
 
 ## License
-//Optional. The MIT License for official Veracode products. Only include with either official Veracode products or reusable Veracode code samples.
-//The GitHub and GitLab UIs provide options for adding this MIT License.
-[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-EXAMPLE: 
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 See the [LICENSE](https://github.com/veracode/.github/blob/main/LICENSE) for details
 
