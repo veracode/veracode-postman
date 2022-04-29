@@ -1,0 +1,301 @@
+{
+	"info": {
+		"_postman_id": "c743a345-73eb-4eca-b4dd-46ca1ee972f5",
+		"name": "Veracode Example",
+		"description": "This is an example suite of API calls for the Veracode REST APIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Self",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{hmacAuthHeader}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/authn/v2/users/self",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"authn",
+						"v2",
+						"users",
+						"self"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Users (with increased size param)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{hmacAuthHeader}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{admin_base_url}}/users?size=160",
+					"host": [
+						"{{admin_base_url}}"
+					],
+					"path": [
+						"users"
+					],
+					"query": [
+						{
+							"key": "size",
+							"value": "160"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add User",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{hmacAuthHeader}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email_address\": \"zbrannigan@doop.gov\",\n    \"user_name\": \"zbrannigan@doop.gov\",\n    \"first_name\": \"Zapp\",\n    \"last_name\": \"Brannigan\",\n    \"ipRestricted\": false,\n    \"active\": true,\n    \"roles\": [\n        {\n            \"role_name\": \"greenlightideuser\"\n        },\n        {\n            \"role_name\": \"extreviewer\"\n        },\n        {\n            \"role_name\": \"sandboxuser\"\n        },\n        {\n            \"role_name\": \"securityLabsUser\"\n        },\n        {\n            \"role_name\": \"extsubmitter\"\n        },\n        {\n            \"role_name\": \"extsubmitanyscan\"\n        }\n    ],\n\t\t\"teams\": [\n\t\t\t\t{\n\t\t\t\t\t\"team_name\": \"Democratic Order of PLanets\"\n\t\t\t\t}\n\t\t],\n    \"userType\": \"VOSP\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/authn/v2/users",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"authn",
+						"v2",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add User From External File (import JSON/CSV into runner)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{hmacAuthHeader}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email_address\": \"{{email_address}}\",\n\t\"user_name\": \"{{email_address}}\",\n    \"first_name\": \"{{first_name}}\",\n    \"last_name\": \"{{last_name}}\",\n    \"ipRestricted\": false,\n    \"active\": true,\n    \"roles\": [\n        {\n            \"role_name\": \"greenlightideuser\"\n        },\n        {\n            \"role_name\": \"extreviewer\"\n        },\n        {\n            \"role_name\": \"sandboxuser\"\n        },\n        {\n            \"role_name\": \"securityLabsUser\"\n        },\n        {\n            \"role_name\": \"extsubmitter\"\n        },\n        {\n            \"role_name\": \"extsubmitanyscan\"\n        }\n    ],\n\t\t\"teams\": [\n\t\t\t\t{\n\t\t\t\t\t\"team_name\": \"{{team_name}}\"\n\t\t\t\t}\n\t\t],\n    \"userType\": \"VOSP\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/authn/v2/users",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"authn",
+						"v2",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Applications",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "digest",
+					"digest": [
+						{
+							"key": "algorithm",
+							"value": "MD5",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{hmacAuthHeader}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/appsec/v1/applications",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"appsec",
+						"v1",
+						"applications"
+					]
+				},
+				"description": "GET Applications no parameters"
+			},
+			"response": []
+		},
+		{
+			"name": "Applications Search",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{hmacAuthHeader}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/appsec/v1/applications?name=verademo",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"appsec",
+						"v1",
+						"applications"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "verademo"
+						}
+					]
+				},
+				"description": "GET Applications no parameters"
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "digest",
+		"digest": [
+			{
+				"key": "algorithm",
+				"value": "MD5",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"/*jshint esversion: 6 */",
+					"",
+					"var url = require('url');",
+					"",
+					"const id = pm.environment.get('api_id');",
+					"const key = pm.environment.get('api_key');",
+					"",
+					"const authorizationScheme = 'VERACODE-HMAC-SHA-256';",
+					"const requestVersion = \"vcode_request_version_1\";",
+					"const nonceSize = 16;",
+					"",
+					"function computeHashHex(message, key_hex) {",
+					"    return CryptoJS.HmacSHA256(message, CryptoJS.enc.Hex.parse(key_hex)).toString(CryptoJS.enc.Hex);",
+					"}",
+					"",
+					"function calculateDataSignature(apikey, nonceBytes, dateStamp, data) {",
+					"    let kNonce = computeHashHex(nonceBytes, apikey);",
+					"    let kDate = computeHashHex(dateStamp, kNonce);",
+					"    let kSig = computeHashHex(requestVersion, kDate);",
+					"    return computeHashHex(data, kSig);",
+					"}",
+					"",
+					"function newNonce() {",
+					"    return CryptoJS.lib.WordArray.random(nonceSize).toString().toUpperCase();",
+					"}",
+					"",
+					"function toHexBinary(input) {",
+					"    return CryptoJS.enc.Hex.stringify(CryptoJS.enc.Utf8.parse(input));",
+					"}",
+					"",
+					"function calculateVeracodeAuthHeader(httpMethod, requestUrl) {",
+					"    let parsedUrl = url.parse(requestUrl);",
+					"    let data = `id=${id}&host=${parsedUrl.hostname}&url=${parsedUrl.path}&method=${httpMethod}`;",
+					"    let dateStamp = Date.now().toString();",
+					"    let nonceBytes = newNonce();",
+					"    let dataSignature = calculateDataSignature(key, nonceBytes, dateStamp, data);",
+					"    let authorizationParam = `id=${id},ts=${dateStamp},nonce=${toHexBinary(nonceBytes)},sig=${dataSignature}`;",
+					"    return authorizationScheme + \" \" + authorizationParam;",
+					"}",
+					"",
+					"var {Property} = require('postman-collection');",
+					"const substitutedUrl = Property.replaceSubstitutions(request.url, pm.variables.toObject());",
+					"postman.setEnvironmentVariable('hmacAuthHeader', calculateVeracodeAuthHeader(request.method, substitutedUrl));"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://api.veracode.com"
+		},
+		{
+			"key": "admin_base_url",
+			"value": "https://api.veracode.com/api/authn/v2"
+		},
+		{
+			"key": "findings_base_url",
+			"value": "https://api.veracode.com/appsec/v1"
+		}
+	]
+}
