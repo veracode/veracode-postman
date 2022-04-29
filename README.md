@@ -1,13 +1,19 @@
+<img src="https://docs.veracode.com/internal/api/webapp/header/logo" width="200" /><br>
+
 # Accessing Veracode APIs with Postman
+
+## Overview
 
 Using [Veracode APIs](https://docs.veracode.com/r/c_gettingstarted) with Postman requires initial configuration to accommodate HMAC signing. Below are instructions for getting up and running with Veracode APIs in Postman.
 
-## Veracode environment
+## Before You Begin
+
+### Veracode environment
 
 1. [Generate API credentials](https://docs.veracode.com/r/t_create_api_creds) for your Veracode user.
 1. Save your API credentials to your [credentials file](https://docs.veracode.com/r/c_configure_api_cred_file).
 
-## Postman environment
+### Postman environment
 
 1. Install Postman on your machine. You can download from the [Postman web site](https://www.postman.com/downloads/).
 1. Create a collection in Postman for your API calls, and edit the following settings:
@@ -18,7 +24,7 @@ Using [Veracode APIs](https://docs.veracode.com/r/c_gettingstarted) with Postman
     1. In the **Pre-Request Scripts** tab, paste in the script found in [pre-request.js](https://github.com/veracode/veracode-postman/blob/main/pre-request.js).
     1. *Recommended*: In the Variables tab, define a variable called `base_url` and enter the base URL for your API calls. The base URL depends on your region and is documented in the **REST APIs** section in the [Region Domains for Veracode Services](https://docs.veracode.com/r/Region_Domains_for_Veracode_APIs).
 
-## Add API calls to Postman
+## Usage
 
 1. Go to the newly created collection and choose **Add Request** from the …. menu.
 1. Give the request a name and click **Save to [Collection Name]**.
@@ -33,6 +39,15 @@ Using [Veracode APIs](https://docs.veracode.com/r/c_gettingstarted) with Postman
 <!-- ## Postman Example Collection
 
 An example Postman collection is provided here. The Collection is a JSON package and includes the pre-request script as well as {{base_ur}} variables for production calls. Upload it into your Postman application by selecting Import and dragging the file into the File window. There is a call chaining example provided but it requires you to also set up an Environment (Environments → + to set up new → set created Environment to active with √) in order to save the output of the first request for use in subsequent requests. It also includes an example that could be used in a runner for repeated iterations over a json or csv file. -->
+
+## License
+//Optional. The MIT License for official Veracode products. Only include with either official Veracode products or reusable Veracode code samples.
+//The GitHub and GitLab UIs provide options for adding this MIT License.
+[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+EXAMPLE: 
+[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+See the [LICENSE](https://github.com/veracode/.github/blob/main/LICENSE) for details
 
 ## Acknowledgements
 
