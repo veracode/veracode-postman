@@ -38,7 +38,7 @@ Using [Veracode APIs](https://docs.veracode.com/r/c_gettingstarted) with Postman
 
 ## Postman Example Collection
 
-An example Postman collection is provided here. The Collection is a JSON package and includes a copy of the pre-request script. Upload it into your Postman application by selecting Import and dragging the file into the File window.
+An [example Postman collection is provided here](https://github.com/veracode/veracode-postman/blob/main/Veracode%20Example.postman_collection.json). The Collection is a JSON package and includes a copy of the pre-request script. Upload it into your Postman application by selecting Import and dragging the file into the File window.
 
 ## License
 
