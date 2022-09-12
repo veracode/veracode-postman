@@ -29,13 +29,20 @@ function toHexBinary(input) {
     return CryptoJS.enc.Hex.stringify(CryptoJS.enc.Utf8.parse(input));
 }
 
+function removePrefixFromApiCredential(input) {
+    return input.split('-').at(-1);
+}
+
 function calculateVeracodeAuthHeader(httpMethod, requestUrl) {
+    const formattedId = removePrefixFromApiCredential(id);
+    const formattedKey = removePrefixFromApiCredential(key);
+
     let parsedUrl = url.parse(requestUrl);
-    let data = `id=${id}&host=${parsedUrl.hostname}&url=${parsedUrl.path}&method=${httpMethod}`;
+    let data = `id=${formattedId}&host=${parsedUrl.hostname}&url=${parsedUrl.path}&method=${httpMethod}`;
     let dateStamp = Date.now().toString();
     let nonceBytes = newNonce();
-    let dataSignature = calculateDataSignature(key, nonceBytes, dateStamp, data);
-    let authorizationParam = `id=${id},ts=${dateStamp},nonce=${toHexBinary(nonceBytes)},sig=${dataSignature}`;
+    let dataSignature = calculateDataSignature(formattedKey, nonceBytes, dateStamp, data);
+    let authorizationParam = `id=${formattedId},ts=${dateStamp},nonce=${toHexBinary(nonceBytes)},sig=${dataSignature}`;
     return authorizationScheme + " " + authorizationParam;
 }
 
