@@ -1,4 +1,8 @@
-<img src="https://docs.veracode.com/internal/api/webapp/header/logo" width="200" /><br>
+<picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/veracode/veracode.github.io/c8597dfd416f971e78936fe28922d63c2223704e/assets/images/veracode-white-hires.svg" height="200" width="200">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/veracode/veracode.github.io/c8597dfd416f971e78936fe28922d63c2223704e/assets/images/veracode-black-hires.svg" height="200" width="200">
+    <img alt="Veracode Logo" src="https://raw.githubusercontent.com/veracode/veracode.github.io/c8597dfd416f971e78936fe28922d63c2223704e/assets/images/veracode-black-hires.svg" height="200" width="200">
+</picture>
 
 # Accessing Veracode APIs with Postman
 
