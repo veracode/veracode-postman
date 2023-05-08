@@ -4,7 +4,13 @@ var url = require('url');
 
 /* set Veracode API credentials in api_id and api_key in environment*/
 const id = pm.environment.get('api_id');
+if (!id) {
+    throw new Error("Environment does not have an 'api_id'. Please ensure you have configured a Veracode environment.");
+}
 const key = pm.environment.get('api_key');
+if (!id) {
+    throw new Error("Environment does not have an 'api_key'. Please ensure you have configured a Veracode environment.");
+}
 
 const authorizationScheme = 'VERACODE-HMAC-SHA-256';
 const requestVersion = "vcode_request_version_1";
