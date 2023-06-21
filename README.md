@@ -22,8 +22,8 @@ Using [Veracode APIs](https://docs.veracode.com/r/c_gettingstarted) with Postman
 1. Install Postman on your machine. You can download from the [Postman web site](https://www.postman.com/downloads/).
 1. Create a collection in Postman for your API calls, and edit the following settings:
     1. In the **Environments** section (left nav), add the following variables, selecting the `secret` type (for more information about secrets in environment variables, see the [Postman docs](https://blog.postman.com/introducing-secret-variable-type-in-postman/)):
-        - `api_id`: (set to your Veracode API ID)
-        - `api_key`: (set to your Veracode API Key)
+        - `api_id`: (set to your Veracode API ID. Note: if your Veracode API ID has a 'veraxxxx-' prefix, remove this from the string)
+        - `api_key`: (set to your Veracode API Key. Note: if your Veracode API Key has a 'veraxxxx-' prefix, remove this from the string)
     1. In the **Authorization** tab, select `Digest Auth`.
     1. In the **Pre-Request Scripts** tab, paste in the script found in [pre-request.js](https://github.com/veracode/veracode-postman/blob/main/pre-request.js).
     1. *Recommended*: In the Variables tab, define a variable called `base_url` and enter the base URL for your API calls. The base URL depends on your region and is documented in the **REST APIs** section in the [Region Domains for Veracode Services](https://docs.veracode.com/r/Region_Domains_for_Veracode_APIs).
