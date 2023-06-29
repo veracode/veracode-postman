@@ -10,13 +10,6 @@
 			"name": "Self",
 			"request": {
 				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{hmacAuthHeader}}",
-						"type": "text"
-					}
-				],
 				"url": {
 					"raw": "{{base_url}}/api/authn/v2/users/self",
 					"host": [
@@ -37,13 +30,6 @@
 			"name": "Users (with increased size param)",
 			"request": {
 				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{hmacAuthHeader}}",
-						"type": "text"
-					}
-				],
 				"url": {
 					"raw": "{{admin_base_url}}/users?size=160",
 					"host": [
@@ -66,13 +52,6 @@
 			"name": "Add User",
 			"request": {
 				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{hmacAuthHeader}}",
-						"type": "text"
-					}
-				],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"email_address\": \"zbrannigan@doop.gov\",\n    \"user_name\": \"zbrannigan@doop.gov\",\n    \"first_name\": \"Zapp\",\n    \"last_name\": \"Brannigan\",\n    \"ipRestricted\": false,\n    \"active\": true,\n    \"roles\": [\n        {\n            \"role_name\": \"greenlightideuser\"\n        },\n        {\n            \"role_name\": \"extreviewer\"\n        },\n        {\n            \"role_name\": \"sandboxuser\"\n        },\n        {\n            \"role_name\": \"securityLabsUser\"\n        },\n        {\n            \"role_name\": \"extsubmitter\"\n        },\n        {\n            \"role_name\": \"extsubmitanyscan\"\n        }\n    ],\n\t\t\"teams\": [\n\t\t\t\t{\n\t\t\t\t\t\"team_name\": \"Democratic Order of PLanets\"\n\t\t\t\t}\n\t\t],\n    \"userType\": \"VOSP\"\n}",
@@ -101,13 +80,6 @@
 			"name": "Add User From External File (import JSON/CSV into runner)",
 			"request": {
 				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{hmacAuthHeader}}",
-						"type": "text"
-					}
-				],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"email_address\": \"{{email_address}}\",\n\t\"user_name\": \"{{email_address}}\",\n    \"first_name\": \"{{first_name}}\",\n    \"last_name\": \"{{last_name}}\",\n    \"ipRestricted\": false,\n    \"active\": true,\n    \"roles\": [\n        {\n            \"role_name\": \"greenlightideuser\"\n        },\n        {\n            \"role_name\": \"extreviewer\"\n        },\n        {\n            \"role_name\": \"sandboxuser\"\n        },\n        {\n            \"role_name\": \"securityLabsUser\"\n        },\n        {\n            \"role_name\": \"extsubmitter\"\n        },\n        {\n            \"role_name\": \"extsubmitanyscan\"\n        }\n    ],\n\t\t\"teams\": [\n\t\t\t\t{\n\t\t\t\t\t\"team_name\": \"{{team_name}}\"\n\t\t\t\t}\n\t\t],\n    \"userType\": \"VOSP\"\n}",
@@ -157,13 +129,6 @@
 					]
 				},
 				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{hmacAuthHeader}}",
-						"type": "text"
-					}
-				],
 				"url": {
 					"raw": "{{base_url}}/appsec/v1/applications",
 					"host": [
@@ -183,13 +148,6 @@
 			"name": "Applications Search",
 			"request": {
 				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{hmacAuthHeader}}",
-						"type": "text"
-					}
-				],
 				"url": {
 					"raw": "{{base_url}}/appsec/v1/applications?name=verademo",
 					"host": [
@@ -267,10 +225,16 @@
 					"    let authorizationParam = `id=${id},ts=${dateStamp},nonce=${toHexBinary(nonceBytes)},sig=${dataSignature}`;",
 					"    return authorizationScheme + \" \" + authorizationParam;",
 					"}",
-					"",
+					"",					
 					"var {Property} = require('postman-collection');",
 					"const substitutedUrl = Property.replaceSubstitutions(request.url, pm.variables.toObject());",
-					"postman.setEnvironmentVariable('hmacAuthHeader', calculateVeracodeAuthHeader(request.method, substitutedUrl));"
+					"postman.setEnvironmentVariable('hmacAuthHeader', calculateVeracodeAuthHeader(request.method, substitutedUrl));",
+					"",
+					"let hmac = calculateVeracodeAuthHeader(pm.request.method, substitutedUrl);",
+					"pm.request.headers.add({",
+					"  key: 'Authorization', ",
+					"  value: hmac ",
+					"});"
 				]
 			}
 		},

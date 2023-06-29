@@ -47,8 +47,9 @@ function calculateVeracodeAuthHeader(httpMethod, requestUrl) {
 }
 
 var {Property} = require('postman-collection');
+const substitutedUrl = Property.replaceSubstitutions(request.url, pm.variables.toObject());
 
-let hmac = calculateVeracodeAuthHeader(pm.request.method, pm.request.url.toString());
+let hmac = calculateVeracodeAuthHeader(pm.request.method, substitutedUrl);
 pm.request.headers.add({
   key: "Authorization",
   value: hmac 
