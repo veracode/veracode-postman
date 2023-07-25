@@ -1,9 +1,11 @@
 {
 	"info": {
-		"_postman_id": "c743a345-73eb-4eca-b4dd-46ca1ee972f5",
+		"_postman_id": "5063f89b-8127-49b9-a6e6-fd83a4ed89e5",
 		"name": "Veracode Example",
 		"description": "This is an example suite of API calls for the Veracode REST APIs",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13366636",
+		"_collection_link": "https://veracodeapis.postman.co/workspace/Veracode-Postman-Collection~4530d0e1-2101-4dab-9f8b-3631af50ff77/collection/13366636-5063f89b-8127-49b9-a6e6-fd83a4ed89e5?action=share&creator=13366636&source=collection_link"
 	},
 	"item": [
 		{
@@ -191,7 +193,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/appsec/v1/applications?name=verademo",
+					"raw": "{{base_url}}/appsec/v1/applications",
 					"host": [
 						"{{base_url}}"
 					],
@@ -199,15 +201,63 @@
 						"appsec",
 						"v1",
 						"applications"
-					],
-					"query": [
-						{
-							"key": "name",
-							"value": "verademo"
-						}
 					]
 				},
 				"description": "GET Applications no parameters"
+			},
+			"response": []
+		},
+		{
+			"name": "All Static Findings",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/appsec/v2/applications/{{app_guid}}/findings?scan_type=STATIC",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"appsec",
+						"v2",
+						"applications",
+						"{{app_guid}}",
+						"findings"
+					],
+					"query": [
+						{
+							"key": "scan_type",
+							"value": "STATIC"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All SCA Findings",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/appsec/v2/applications/{{app_guid}}/findings?scan_type=SCA",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"appsec",
+						"v2",
+						"applications",
+						"{{app_guid}}",
+						"findings"
+					],
+					"query": [
+						{
+							"key": "scan_type",
+							"value": "SCA"
+						}
+					]
+				}
 			},
 			"response": []
 		}
@@ -232,6 +282,7 @@
 					"",
 					"var url = require('url');",
 					"",
+					"/* set Veracode API credentials in api_id and api_key in environment*/",
 					"const id = pm.environment.get('api_id');",
 					"if (!id) {",
 					"    throw new Error(\"Environment does not have an 'api_id'. Please ensure you have configured a Veracode environment.\");",
@@ -309,6 +360,11 @@
 		{
 			"key": "findings_base_url",
 			"value": "https://api.veracode.com/appsec/v1"
+		},
+		{
+			"key": "app_guid",
+			"value": "",
+			"type": "string"
 		}
 	]
 }
