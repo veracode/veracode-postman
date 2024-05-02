@@ -1,6 +1,7 @@
 /*jshint esversion: 6 */
 
 var url = require('url');
+var crypto = require('crypto-js');
 
 /* set Veracode API credentials in api_id and api_key in environment*/
 const id = pm.environment.get('api_id');
@@ -17,7 +18,7 @@ const requestVersion = "vcode_request_version_1";
 const nonceSize = 16;
 
 function computeHashHex(message, key_hex) {
-    return CryptoJS.HmacSHA256(message, CryptoJS.enc.Hex.parse(key_hex)).toString(CryptoJS.enc.Hex);
+    return crypto.HmacSHA256(message, crypto.enc.Hex.parse(key_hex)).toString(crypto.enc.Hex);
 }
 
 function calculateDataSignature(apikey, nonceBytes, dateStamp, data) {
@@ -28,11 +29,11 @@ function calculateDataSignature(apikey, nonceBytes, dateStamp, data) {
 }
 
 function newNonce() {
-    return CryptoJS.lib.WordArray.random(nonceSize).toString().toUpperCase();
+    return crypto.lib.WordArray.random(nonceSize).toString().toUpperCase();
 }
 
 function toHexBinary(input) {
-    return CryptoJS.enc.Hex.stringify(CryptoJS.enc.Utf8.parse(input));
+    return crypto.enc.Hex.stringify(crypto.enc.Utf8.parse(input));
 }
 
 function removePrefixFromApiCredential(input) {
@@ -53,10 +54,11 @@ function calculateVeracodeAuthHeader(httpMethod, requestUrl) {
 }
 
 var {Property} = require('postman-collection');
-const substitutedUrl = Property.replaceSubstitutions(request.url, pm.variables.toObject());
+const substitutedUrl = Property.replaceSubstitutions(pm.request.url.toString(), pm.variables.toObject());
 
 let hmac = calculateVeracodeAuthHeader(pm.request.method, substitutedUrl);
 pm.request.headers.add({
-  key: "Authorization",
-  value: hmac 
+    key: "Authorization",
+    value: hmac
 });
+
