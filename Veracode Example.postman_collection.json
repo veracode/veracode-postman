@@ -183,13 +183,6 @@
 			],
 			"request": {
 				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{hmacAuthHeader}}",
-						"type": "text"
-					}
-				],
 				"url": {
 					"raw": "{{base_url}}/appsec/v2/applications/{{app_guid}}/findings?scan_type=STATIC",
 					"host": [
@@ -230,13 +223,6 @@
 			],
 			"request": {
 				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{hmacAuthHeader}}",
-						"type": "text"
-					}
-				],
 				"url": {
 					"raw": "{{base_url}}/appsec/v2/applications/{{app_guid}}/findings?scan_type=SCA",
 					"host": [

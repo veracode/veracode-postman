@@ -23,3 +23,4 @@ Please follow the instructions below to make a contribution. We welcome contribu
 - [Rob Larkin](https://github.com/rlarkin01)
 - [Julian Totzek-Hallhuber](https://github.com/julz0815)
 - [Jim Jonah](https://github.com/jimjonah)
+- [Ricardo Pereira](https://github.com/cadonuno)
