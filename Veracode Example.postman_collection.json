@@ -1,110 +1,1734 @@
 {
 	"info": {
-		"_postman_id": "5063f89b-8127-49b9-a6e6-fd83a4ed89e5",
+		"_postman_id": "d0a2d38b-7e62-48e8-8f20-930f8aa18366",
 		"name": "Veracode Example",
-		"description": "This is an example suite of API calls for the Veracode REST APIs",
+		"description": "This is an example suite of API calls for a subset of the Veracode REST APIs.  \n  \n[https://docs.veracode.com/r/Veracode_APIs#rest-apis](https://docs.veracode.com/r/Veracode_APIs#rest-apis)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13366636",
-		"_collection_link": "https://veracodeapis.postman.co/workspace/Veracode-Postman-Collection~4530d0e1-2101-4dab-9f8b-3631af50ff77/collection/13366636-5063f89b-8127-49b9-a6e6-fd83a4ed89e5?action=share&creator=13366636&source=collection_link"
+		"_exporter_id": "2219278"
 	},
 	"item": [
 		{
-			"name": "Self",
-			"request": {
-				"method": "GET",
-				"url": {
-					"raw": "{{base_url}}/api/authn/v2/users/self",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"api",
-						"authn",
-						"v2",
-						"users",
-						"self"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Users (with increased size param)",
-			"request": {
-				"method": "GET",
-				"url": {
-					"raw": "{{admin_base_url}}/users?size=160",
-					"host": [
-						"{{admin_base_url}}"
-					],
-					"path": [
-						"users"
-					],
-					"query": [
+			"name": "Custom Roles",
+			"item": [
+				{
+					"name": "Get Roles",
+					"event": [
 						{
-							"key": "size",
-							"value": "160"
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response = pm.response.json();",
+									"",
+									"// this prints a sorted list of roles.",
+									"// IF you want more detail about particular role put its name, or partial name, in line 12 where 'seclead' is. That will populate the ",
+									"// environment variable 'role_uuid' which can then be used by the 'Get Role by UUID' call.",
+									"",
+									"if (pm.response.json().hasOwnProperty(\"_embedded\")) {",
+									"    let role_names = [];",
+									"    let found_role_names = [];",
+									"",
+									"    for (let i in response._embedded.roles) {",
+									"        // console.log( response._embedded.roles[i].role_name);",
+									"        role_names = role_names.concat(response._embedded.roles[i].role_name);",
+									"",
+									"        if (response._embedded.roles[i].role_name.includes('seclead')) { // && response._embedded.roles[i].is_scan_type === false) {",
+									"            // console.log(response._embedded.roles[i].role_name, response._embedded.roles[i].role_description, response._embedded.roles[i].role_id);",
+									"            found_role_names = found_role_names.concat(response._embedded.roles[i].role_name + ', ' + response._embedded.roles[i].role_description + ', ' +  response._embedded.roles[i].role_id);",
+									"            pm.environment.set('role_uuid', response._embedded.roles[i].role_id);",
+									"        }",
+									"    }",
+									"",
+									"    role_names.sort();",
+									"    role_names.forEach(_ => console.log(_));",
+									"    found_role_names.forEach(_ => console.log(_))",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
 						}
-					]
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{admin_base_url}}/roles?page=0&size=500",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"roles"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "500",
+									"description": "The default is twenty"
+								},
+								{
+									"key": "role_parents_only",
+									"value": "true",
+									"description": "IF you have a multi-level child_role setup this will return the top role, which includes its children, but not the children themselves, since they'll be in the parent roles tree of roles",
+									"disabled": true
+								},
+								{
+									"key": "permission_id",
+									"value": "{{permission_uuid}}",
+									"description": "To see roles that include this permission",
+									"disabled": true
+								},
+								{
+									"key": "is_api",
+									"value": "true",
+									"description": "To see non-human/service roles",
+									"disabled": true
+								},
+								{
+									"key": "permission_name",
+									"value": "{{permission_name}}",
+									"description": "To see roles that include this permission",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Role by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response =pm.response.json();",
+									"",
+									"// If you looking for a permission that includes 'download' as part of the name",
+									"// for (let i in response.permissions) {",
+									"//  if(response.permissions[i].permission_name.includes('download')){",
+									"//     console.log( response.permissions[i].permission_name);",
+									"//  }",
+									"// }",
+									"",
+									"// This is useful for when you want to basically clone an existing role and add or remove permissions.",
+									"// the log output is basically the permissions section of the json you'll need when creating a custom role. ",
+									"console.log('   \"permissions\": [');",
+									"for (let i in response.permissions) {",
+									"    if (response.permissions[i].permission_types) {",
+									"        const permissionTypesString = response.permissions[i].permission_types",
+									"                .map(item => `\"${item}\"`)",
+									"                .join(', ');",
+									"",
+									"        var perm = \"{\\\"permission_name\\\" : \" + \"\\\"\" + response.permissions[i].permission_name + \"\\\",\" ;",
+									"        var permTypes = \"\\\"permission_types\\\" : \" + \"[\" + permissionTypesString + \"]},\" ;",
+									"        console.log(perm + permTypes);",
+									"    } else {",
+									"        var str = \"{\\\"permission_name\\\" : \" + \"\\\"\" + response.permissions[i].permission_name + \"\\\"},\" ;",
+									"        console.log(str);",
+									"    }",
+									"}",
+									"console.log(' ]');"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{admin_base_url}}/roles/{{role_uuid}}",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"roles",
+								"{{role_uuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get permissions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response = pm.response.json();",
+									"",
+									"for (let i in response._embedded.permissions) {",
+									"    //  console.log( response._embedded.roles[i].role_name);",
+									"",
+									"// IF you want more detail about particular permission put its name, or partial name, in line 8 where 'download' is. That will populate the ",
+									"// environment variables 'permission_uuid' and 'permission_name' which can then be used by the 'Get Permission by UUID' call.",
+									"    if (response._embedded.permissions[i].permission_name.includes('download')) {",
+									"        console.log(response._embedded.permissions[i].permission_name, response._embedded.permissions[i].permission_description, response._embedded.permissions[i].permission_id,",
+									"        response._embedded.permissions[i].permission_types);",
+									"        pm.environment.set('permission_uuid', response._embedded.permissions[i].permission_id);",
+									"        pm.environment.set('permission_name', response._embedded.permissions[i].permission_name);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{admin_base_url}}/permissions?size=500",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"permissions"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "size",
+									"value": "500",
+									"description": "The default is twenty"
+								},
+								{
+									"key": "exclude_ui",
+									"value": "true",
+									"description": "When looking for permissions that you can use in non-human/service roles.",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get permission by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{admin_base_url}}/permissions/{{permission_uuid}}",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"permissions",
+								"{{permission_uuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all users assigned a role (recursively) by role ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response =pm.response.json();",
+									"",
+									"",
+									"if(pm.response.json().hasOwnProperty(\"_embedded\")){",
+									"    for (let i in response._embedded.users) {  ",
+									"        console.log( response._embedded.users[i].user_id, response._embedded.users[i].user_name, ",
+									"            response._embedded.users[i].email_address);",
+									"    ",
+									"        if (response._embedded.users[i].email_address.includes('noreply@example.com')) {",
+									"            console.log('Found user');",
+									"            console.log(response._embedded.users[i].user_id, response._embedded.users[i].user_name, response._embedded.users[i].email_address);",
+									"",
+									"            pm.environment.set('user_uuid', response._embedded.users[i].user_id);",
+									"        }",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{admin_base_url}}/users/by_role/{{role_uuid}}",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"users",
+								"by_role",
+								"{{role_uuid}}"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "size",
+									"value": "200",
+									"description": "The default will be 20",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a user using search",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response =pm.response.json();",
+									"",
+									"// if(pm.response.json().hasOwnProperty(\"user_id\")){",
+									"//     console.log( response.user_name, response.user_id);",
+									"// }",
+									"",
+									"for (let i in response._embedded.users) {",
+									"        console.log( response._embedded.users[i].user_name, response._embedded.users[i].user_id);",
+									"",
+									"        if (response._embedded.users[i].email_address.includes('noreply@example.com')) {",
+									"            console.log('Found user');",
+									"            console.log(response._embedded.users[i].user_id, response._embedded.users[i].user_name, response._embedded.users[i].email_address);",
+									"",
+									"            pm.environment.set('user_uuid', response._embedded.users[i].user_id);",
+									"        }",
+									"",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{admin_base_url}}/users/search?role_id={{role_uuid}}",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"users",
+								"search"
+							],
+							"query": [
+								{
+									"key": "inactive",
+									"value": "true",
+									"description": "Flag to indicate to filter by Active",
+									"disabled": true
+								},
+								{
+									"key": "detailed",
+									"value": "true",
+									"description": "Flag to indicate if more details are to be included in the results",
+									"disabled": true
+								},
+								{
+									"key": "deleted",
+									"value": "true",
+									"description": "Flag to indicate to filter by soft Deleted",
+									"disabled": true
+								},
+								{
+									"key": "search_term",
+									"value": "a-user-name",
+									"description": "The keyword to search under username, first name, last name and email address fields for a user",
+									"disabled": true
+								},
+								{
+									"key": "role_id",
+									"value": "{{role_uuid}}"
+								},
+								{
+									"key": "ip_restricted",
+									"value": "true",
+									"description": "Flag to indicate to filter by IP Restricted",
+									"disabled": true
+								},
+								{
+									"key": "team_id",
+									"value": "{{team_uuid}}",
+									"disabled": true
+								},
+								{
+									"key": "saml_user",
+									"value": "true",
+									"description": "Flag to indicate to filter by SAML user",
+									"disabled": true
+								},
+								{
+									"key": "login_status",
+									"value": "true",
+									"description": "Flag to indicate user status to filter by",
+									"disabled": true
+								},
+								{
+									"key": "login_enabled",
+									"value": "true",
+									"description": "Flag to indicate to filter by login enabled status",
+									"disabled": true
+								},
+								{
+									"key": "api_id",
+									"value": "{{api_uuid}}",
+									"description": "The Api Id to search for",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response =pm.response.json();",
+									"",
+									"if(pm.response.json().hasOwnProperty(\"user_id\")){",
+									"    console.log( response.user_name, response.user_id);",
+									"",
+									"    console.log('teams this user is on:');",
+									"",
+									"    for (let i in response.teams) {",
+									"        console.log( response.teams[i].team_name, response.teams[i].team_id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{admin_base_url}}/users/{{user_uuid}}",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"users",
+								"{{user_uuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create download custom role",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response =pm.response.json();",
+									"",
+									"",
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);",
+									"});",
+									"",
+									"if(pm.response.json().hasOwnProperty(\"role_id\")){",
+									"    console.log(response.role_name, \"role_id\", response.role_id);",
+									"    pm.environment.set('role_uuid', response.role_id);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"role_name\": \"download\",\n    \"role_description\": \"Developer Download\",\n    \"is_api\" : false,\n    \"team_admin_manageable\": false,\n    \"jit_assignable\" : true,\n    \"jit_assignable_default\" : true,\n    \"permissions\": [\n        {\n            \"permission_name\": \"downloadDiscoverySiteList\"\n        },\n        {\n            \"permission_name\": \"downloadScanReportXML\"\n        },\n        {\n            \"permission_name\": \"downloadScript\"\n        },\n        {\n            \"permission_name\": \"downloadSiteList\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{admin_base_url}}/roles",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"roles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Custom Role - add a permission",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// this adds a permission to an existing custom role\n// partial = true means that we are not providing a complete JSON to replace everything about the existing role\n// incremental = true means that we are adding something to an attibute that's an array. If you want to remove something from the array leave this \n// parameter off and provide the complete array replacement\n{\n    \"permissions\": [\n        {\n            \"permission_name\": \"fileExchange\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{admin_base_url}}/roles/{{role_uuid}}?partial=true&incremental=true",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"roles",
+								"{{role_uuid}}"
+							],
+							"query": [
+								{
+									"key": "partial",
+									"value": "true",
+									"description": "Flag to indicate if this is a partial update. Typically a PUT is a complete replacement. If you are sending only parts of the JSON object set this to true."
+								},
+								{
+									"key": "incremental",
+									"value": "true",
+									"description": "Flag to indicate if this is an incremental update. Use this if your adding anything to a JSON array object. IF you want to remove something then don't check this, but instead send the complete new array minus whatever you wanted to delete."
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Custom Role - add a child role",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// this adds a child_role to an existing custom role\n// partial = true means that we are not providing a complete JSON to replace everything about the existing role\n// incremental = true means that we are adding something to an attibute that's an array. If you want to remove something from the array leave this \n// parameter off and provide the complete array replacement\n\n{\n    \"child_roles\": [\n        {\n            \"role_description\": \"Reviewer\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{admin_base_url}}/roles/{{role_uuid}}?partial=true&incremental=true",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"roles",
+								"{{role_uuid}}"
+							],
+							"query": [
+								{
+									"key": "partial",
+									"value": "true",
+									"description": "Flag to indicate if this is a partial update. Typically a PUT is a complete replacement. If you are sending only parts of the JSON object set this to true."
+								},
+								{
+									"key": "incremental",
+									"value": "true",
+									"description": "Flag to indicate if this is an incremental update. Use this if your adding anything to a JSON array object. IF you want to remove something then don't check this, but instead send the complete new array minus whatever you wanted to delete."
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Custom Role",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{admin_base_url}}/roles/{{role_uuid}}",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"roles",
+								"{{role_uuid}}"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			],
+			"description": "[https://docs.veracode.com/r/c_role_permissions#custom-roles<br><br>](https://docs.veracode.com/r/c_role_permissions#custom-roles)This is for use by someone who has the Veracode role called 'Administrator'.\n\nSeveral of the APIs have optional parameters - see the \"Params\" tab for that API.\n\nIn general the APIs that return a list of items have code in the \"post-query\" script that can help you find a particular item and set the UUID for it in the Postman environment so that the API calls \"Get x by UUID\" will have the UUID preloaded."
 		},
 		{
-			"name": "Add User",
-			"request": {
-				"method": "POST",
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"email_address\": \"zbrannigan@doop.gov\",\n    \"user_name\": \"zbrannigan@doop.gov\",\n    \"first_name\": \"Zapp\",\n    \"last_name\": \"Brannigan\",\n    \"ipRestricted\": false,\n    \"active\": true,\n    \"roles\": [\n        {\n            \"role_name\": \"greenlightideuser\"\n        },\n        {\n            \"role_name\": \"extreviewer\"\n        },\n        {\n            \"role_name\": \"sandboxuser\"\n        },\n        {\n            \"role_name\": \"securityLabsUser\"\n        },\n        {\n            \"role_name\": \"extsubmitter\"\n        },\n        {\n            \"role_name\": \"extsubmitanyscan\"\n        }\n    ],\n\t\t\"teams\": [\n\t\t\t\t{\n\t\t\t\t\t\"team_name\": \"Democratic Order of PLanets\"\n\t\t\t\t}\n\t\t],\n    \"userType\": \"VOSP\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+			"name": "Teams",
+			"item": [
+				{
+					"name": "Get teams self",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response =pm.response.json();",
+									"",
+									"if(pm.response.json().hasOwnProperty(\"_embedded\")){",
+									"    for (let i in response._embedded.teams) {  ",
+									"        console.log( response._embedded.teams[i].team_id, \" : \", response._embedded.teams[i].team_name);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [],
+								"type": "text/javascript"
+							}
 						}
-					}
-				},
-				"url": {
-					"raw": "{{base_url}}/api/authn/v2/users",
-					"host": [
-						"{{base_url}}"
 					],
-					"path": [
-						"api",
-						"authn",
-						"v2",
-						"users"
-					]
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{admin_base_url}}/teams/self",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"teams",
+								"self"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get teams",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response =pm.response.json();",
+									"",
+									"if(pm.response.json().hasOwnProperty(\"_embedded\")){",
+									"    for (let i in response._embedded.teams) {  ",
+									"        console.log( response._embedded.teams[i].team_id, \" : \", response._embedded.teams[i].team_name);",
+									"        if (response._embedded.teams[i].team_name.includes('testteam')) {",
+									"            pm.environment.set('team_uuid', response._embedded.teams[i].team_id);",
+									"            console.log( response._embedded.teams[i].team_id, \" : \", response._embedded.teams[i].team_name);",
+									"        }",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{admin_base_url}}/teams?size=500",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"teams"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "size",
+									"value": "500",
+									"description": "The default is 20"
+								},
+								{
+									"key": "team_name",
+									"value": "{{team_name}}",
+									"description": "Filter by team containing name",
+									"disabled": true
+								},
+								{
+									"key": "only_manageable",
+									"value": "true",
+									"description": "Return only teams you can manage. Typically this is useful for someone who has a Team Admin based role.",
+									"disabled": true
+								},
+								{
+									"key": "deleted",
+									"value": "true",
+									"description": "Return teams that are soft deleted",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateTeam - testteam",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log(\"new team_uuid:\" + pm.response.json().team_id)",
+									"",
+									"if(pm.response.to.have.status(201)){",
+									"    pm.environment.set(\"team_uuid\",pm.response.json().team_id);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"team_name\" : \"testteam\"\r\n}\t\t",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{admin_base_url}}/teams",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"teams"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add users to a team",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"team_name\" : \"testteam\",\r\n    \"users\": [\r\n    {\r\n      \"user_name\": \"test_ext_admin\"\r\n    }\r\n  ]\r\n}\t\t",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{admin_base_url}}/teams/{{team_uuid}}?partial=true&incremental=true",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"teams",
+								"{{team_uuid}}"
+							],
+							"query": [
+								{
+									"key": "partial",
+									"value": "true",
+									"description": "Flag to indicate if this is a partial update. Typically a PUT is a complete replacement. If you are sending only parts of the JSON object set this to true."
+								},
+								{
+									"key": "incremental",
+									"value": "true",
+									"description": "Flag to indicate if this is an incremental update. Use this if your adding anything to a JSON array object. IF you want to remove something then don't check this, but instead send the complete new array minus whatever you wanted to delete."
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get team by UUID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response =pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    if(pm.response.json().hasOwnProperty(\"team_id\")){",
+									"        console.log( response.team_name, \" : \", response.team_id);",
+									"    }",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{admin_base_url}}/teams/{{team_uuid}}",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"teams",
+								"{{team_uuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete team",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log(\"deleted team: \" + pm.environment.get(\"team_uuid\"))",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.environment.set(\"team_uuid\", '');",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{admin_base_url}}/teams/{{team_uuid}}",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"teams",
+								"{{team_uuid}}"
+							],
+							"query": [
+								{
+									"key": "hard_delete",
+									"value": "true",
+									"description": "Flag indicating if you want to permanently delete this record",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			],
+			"description": "[https://docs.veracode.com/r/c_identity_intro#create-a-team](https://docs.veracode.com/r/c_identity_intro#create-a-team)\n\nThis is for use by someone who has the Veracode role called 'Administrator'.\n\nSeveral of the APIs have optional parameters - see the \"Params\" tab for that API.\n\nIn general the APIs that return a list of items have code in the \"post-query\" script that can help you find a particular item and set the UUID for it in the Postman environment so that the API calls \"Get x by UUID\" will have the UUID preloaded."
 		},
 		{
-			"name": "Add User From External File (import JSON/CSV into runner)",
-			"request": {
-				"method": "POST",
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"email_address\": \"{{email_address}}\",\n\t\"user_name\": \"{{email_address}}\",\n    \"first_name\": \"{{first_name}}\",\n    \"last_name\": \"{{last_name}}\",\n    \"ipRestricted\": false,\n    \"active\": true,\n    \"roles\": [\n        {\n            \"role_name\": \"greenlightideuser\"\n        },\n        {\n            \"role_name\": \"extreviewer\"\n        },\n        {\n            \"role_name\": \"sandboxuser\"\n        },\n        {\n            \"role_name\": \"securityLabsUser\"\n        },\n        {\n            \"role_name\": \"extsubmitter\"\n        },\n        {\n            \"role_name\": \"extsubmitanyscan\"\n        }\n    ],\n\t\t\"teams\": [\n\t\t\t\t{\n\t\t\t\t\t\"team_name\": \"{{team_name}}\"\n\t\t\t\t}\n\t\t],\n    \"userType\": \"VOSP\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+			"name": "Business Units",
+			"item": [
+				{
+					"name": "Get business units",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response =pm.response.json();",
+									"",
+									"if(pm.response.json().hasOwnProperty(\"_embedded\")){",
+									"    for (let i in response._embedded.business_units) {  ",
+									"        // console.log( response._embedded.business_units[i].bu_id, \" : \", response._embedded.business_units[i].bu_name);",
+									"        if (response._embedded.business_units[i].bu_name.includes('Test Biz Unit')) {",
+									"            pm.environment.set('business_unit_uuid', response._embedded.business_units[i].bu_id);",
+									"            console.log( response._embedded.business_units[i].bu_id, \" : \", response._embedded.business_units[i].bu_name);",
+									"        }",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
 						}
-					}
-				},
-				"url": {
-					"raw": "{{base_url}}/api/authn/v2/users",
-					"host": [
-						"{{base_url}}"
 					],
-					"path": [
-						"api",
-						"authn",
-						"v2",
-						"users"
-					]
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{admin_base_url}}/business_units",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"business_units"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Business Unit - TestBizUnit",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"",
+									"if(pm.response.to.have.status(201)){",
+									"    console.log(\"new business_unit_uuid:\" + pm.response.json().bu_id)",
+									"    pm.environment.set(\"business_unit_uuid\",pm.response.json().bu_id);",
+									"}",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"bu_name\": \"Test Biz Unit\"\r\n}\t",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{admin_base_url}}/business_units",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"business_units"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get business unt by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response =pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    if(pm.response.json().hasOwnProperty(\"bu_id\")){",
+									"        console.log( response.bu_id, \" : \", response.bu_name);",
+									"    }",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{admin_base_url}}/business_units/{{business_unit_uuid}}",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"business_units",
+								"{{business_unit_uuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add teams to business unit",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"teams\": [\r\n    {\r\n      \"team_id\": \"{{team_uuid}}\"\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{admin_base_url}}/business_units/{{business_unit_uuid}}?partial=true&incremental=true",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"business_units",
+								"{{business_unit_uuid}}"
+							],
+							"query": [
+								{
+									"key": "partial",
+									"value": "true"
+								},
+								{
+									"key": "incremental",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Rename a business unit",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n \"bu_name\": \"My business unit\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{admin_base_url}}/business_units/{{business_unit_uuid}}?partial=true",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"business_units",
+								"{{business_unit_uuid}}"
+							],
+							"query": [
+								{
+									"key": "partial",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a business unit",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log(\"deleted team: \" + pm.environment.get(\"business_unit_uuid\"))",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.environment.set(\"business_unit_uuid\", '');",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{admin_base_url}}/business_units/{{business_unit_uuid}}",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"business_units",
+								"{{business_unit_uuid}}"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			],
+			"description": "[https://docs.veracode.com/r/c_identity_intro#create-a-business-unit](https://docs.veracode.com/r/c_identity_intro#create-a-business-unit)\n\nThis is for use by someone who has the Veracode role called 'Administrator'.\n\nSeveral of the APIs have optional parameters - see the \"Params\" tab for that API.\n\nIn general the APIs that return a list of items have code in the \"post-query\" script that can help you find a particular item and set the UUID for it in the Postman environment so that the API calls \"Get x by UUID\" will have the UUID preloaded."
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Self",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{admin_base_url}}/users/self",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"users",
+								"self"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Users (with increased size param)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response = pm.response.json();",
+									"",
+									"for (let i in response._embedded.users) {",
+									"    //  console.log( response._embedded.roles[i].role_name);",
+									"",
+									"// IF you want more detail about particular user put their email address, or partial email address, in line 8 where 'noresponse@veracode.com' is. ",
+									"// That will populate the environment variable 'user_uuid' which can then be used by the 'Get User by UUID' call.",
+									"    if (response._embedded.users[i].email_address.includes('noresponse@veracode.com')) {",
+									"        console.log(response._embedded.users[i].user_name, response._embedded.users[i].email_address, response._embedded.users[i].user_id);",
+									"        pm.environment.set('user_uuid', response._embedded.users[i].user_id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{admin_base_url}}/users?size=500",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "500",
+									"description": "The default is 20"
+								},
+								{
+									"key": "page",
+									"value": "0",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if(pm.response.to.have.status(201)){",
+									"    pm.environment.set('user_uuid',pm.response.json().user_id);",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email_address\": \"zbrannigan@doop.gov\",\n    \"user_name\": \"zbrannigan@doop.gov\",\n    \"first_name\": \"Zapp\",\n    \"last_name\": \"Brannigan\",\n    \"ipRestricted\": false,\n    \"active\": true,\n    \"roles\": [\n        {\n            \"role_name\": \"greenlightideuser\"\n        },\n        {\n            \"role_name\": \"extreviewer\"\n        },\n        {\n            \"role_name\": \"sandboxuser\"\n        },\n        {\n            \"role_name\": \"securityLabsUser\"\n        },\n        {\n            \"role_name\": \"extsubmitter\"\n        },\n        {\n            \"role_name\": \"extsubmitanyscan\"\n        }\n    ],\n\t\t\"teams\": [\n\t\t\t\t{\n\t\t\t\t\t\"team_name\": \"Democratic Order of PLanets\"\n\t\t\t\t}\n\t\t],\n    \"userType\": \"VOSP\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{admin_base_url}}/users",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add User From External File (import JSON/CSV into runner)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.iterationData.get(\"email_address\");",
+									"pm.iterationData.get(\"first_name\");",
+									"pm.iterationData.get(\"last_name\");",
+									"pm.iterationData.get(\"team_name\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if(pm.response.to.have.status(201)){",
+									"    // NOTE if you're importing a list of users from a file than this will have the UUID of the last user imported/created.",
+									"    pm.environment.set('user_uuid',pm.response.json().user_id);",
+									"}",
+									"",
+									"// now clear the data from the import so that any future missing data won't use data from this user",
+									"pm.environment.set('email_address', '');",
+									"pm.environment.set('first_name', '');",
+									"pm.environment.set('last_name', '');",
+									"pm.environment.set('team_name', '');"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email_address\": \"{{email_address}}\",\n\t\"user_name\": \"{{email_address}}\",\n    \"first_name\": \"{{first_name}}\",\n    \"last_name\": \"{{last_name}}\",\n    \"ipRestricted\": false,\n    \"active\": true,\n    \"roles\": [\n        {\n            \"role_name\": \"greenlightideuser\"\n        },\n        {\n            \"role_name\": \"extreviewer\"\n        },\n        {\n            \"role_name\": \"sandboxuser\"\n        },\n        {\n            \"role_name\": \"securityLabsUser\"\n        },\n        {\n            \"role_name\": \"extsubmitter\"\n        },\n        {\n            \"role_name\": \"extsubmitanyscan\"\n        }\n    ],\n\t\t\"teams\": [\n\t\t\t\t{\n\t\t\t\t\t\"team_name\": \"{{team_name}}\"\n\t\t\t\t}\n\t\t],\n    \"userType\": \"VOSP\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{admin_base_url}}/users",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"if(pm.response.to.have.status(200)){",
+									"    pm.environment.set(\"user_uuid\",\"\");",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"name": "Content-Type",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{hmacAuthHeader}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{admin_base_url}}/users/{{user_uuid}}",
+							"host": [
+								"{{admin_base_url}}"
+							],
+							"path": [
+								"users",
+								"{{user_uuid}}"
+							],
+							"query": [
+								{
+									"key": "hard_delete",
+									"value": "true",
+									"description": "Flag indicating if you want to permanently delete this record",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "Applications",
@@ -131,6 +1755,7 @@
 					]
 				},
 				"method": "GET",
+				"header": [],
 				"url": {
 					"raw": "{{base_url}}/appsec/v1/applications",
 					"host": [
@@ -150,6 +1775,7 @@
 			"name": "Applications Search",
 			"request": {
 				"method": "GET",
+				"header": [],
 				"url": {
 					"raw": "{{base_url}}/appsec/v1/applications",
 					"host": [
@@ -183,6 +1809,7 @@
 			],
 			"request": {
 				"method": "GET",
+				"header": [],
 				"url": {
 					"raw": "{{base_url}}/appsec/v2/applications/{{app_guid}}/findings?scan_type=STATIC",
 					"host": [
@@ -223,6 +1850,7 @@
 			],
 			"request": {
 				"method": "GET",
+				"header": [],
 				"url": {
 					"raw": "{{base_url}}/appsec/v2/applications/{{app_guid}}/findings?scan_type=SCA",
 					"host": [
@@ -265,6 +1893,7 @@
 					"/*jshint esversion: 6 */",
 					"",
 					"var url = require('url');",
+					"var crypto = require('crypto-js');",
 					"",
 					"/* set Veracode API credentials in api_id and api_key in environment*/",
 					"const id = pm.environment.get('api_id');",
@@ -281,7 +1910,7 @@
 					"const nonceSize = 16;",
 					"",
 					"function computeHashHex(message, key_hex) {",
-					"    return CryptoJS.HmacSHA256(message, CryptoJS.enc.Hex.parse(key_hex)).toString(CryptoJS.enc.Hex);",
+					"    return crypto.HmacSHA256(message, crypto.enc.Hex.parse(key_hex)).toString(crypto.enc.Hex);",
 					"}",
 					"",
 					"function calculateDataSignature(apikey, nonceBytes, dateStamp, data) {",
@@ -292,11 +1921,11 @@
 					"}",
 					"",
 					"function newNonce() {",
-					"    return CryptoJS.lib.WordArray.random(nonceSize).toString().toUpperCase();",
+					"    return crypto.lib.WordArray.random(nonceSize).toString().toUpperCase();",
 					"}",
 					"",
 					"function toHexBinary(input) {",
-					"    return CryptoJS.enc.Hex.stringify(CryptoJS.enc.Utf8.parse(input));",
+					"    return crypto.enc.Hex.stringify(crypto.enc.Utf8.parse(input));",
 					"}",
 					"",
 					"function removePrefixFromApiCredential(input) {",
@@ -315,16 +1944,17 @@
 					"    let authorizationParam = `id=${formattedId},ts=${dateStamp},nonce=${toHexBinary(nonceBytes)},sig=${dataSignature}`;",
 					"    return authorizationScheme + \" \" + authorizationParam;",
 					"}",
-					"",					
+					"",
 					"var {Property} = require('postman-collection');",
-					"const substitutedUrl = Property.replaceSubstitutions(request.url, pm.variables.toObject());",
-					"postman.setEnvironmentVariable('hmacAuthHeader', calculateVeracodeAuthHeader(request.method, substitutedUrl));",
+					"const substitutedUrl = Property.replaceSubstitutions(pm.request.url.toString(), pm.variables.toObject());",
 					"",
 					"let hmac = calculateVeracodeAuthHeader(pm.request.method, substitutedUrl);",
 					"pm.request.headers.add({",
-					"  key: 'Authorization', ",
-					"  value: hmac ",
-					"});"
+					"    key: \"Authorization\",",
+					"    value: hmac",
+					"});",
+					"",
+					""
 				]
 			}
 		},
