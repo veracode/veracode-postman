@@ -17,7 +17,7 @@ Using [Veracode APIs](https://docs.veracode.com/r/c_gettingstarted) with Postman
 If you have not does so, please follow these steps to generate the necessary API Token Credential to use with Postman. This will be required for providing the variables of *api_id* and *api_key*.
 
 1. [Generate API credentials](https://docs.veracode.com/r/t_create_api_creds) for your Veracode user.
-2. Store the credential information is  a safe place or as a cre[credential file](https://docs.veracode.com/r/c_configure_api_cred_file) for use with Veracode products.
+2. Store the credential information is  a safe place or as a [credential file](https://docs.veracode.com/r/c_configure_api_cred_file) for use with Veracode products.
 
 ## Postman Example
 
