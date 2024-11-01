@@ -21,7 +21,7 @@ If you have not does so, please follow these steps to generate the necessary API
 
 ## Postman Example
 
-These instructions will help you quickly setup the Postman example provided by Vercode. The example provides all the necessary scripts, environments, variables and collection request examples to start using Postman against Vercode APIs.
+These instructions will help you quickly setup the Postman example provided by Veracode. The example provides all the necessary scripts, environments, variables and collection request examples to start using Postman against Veracode APIs.
 
 The content used for this example is located [here](https://github.com/veracode/veracode-postman/tree/main) The content consist of a Collection, Environment and pre-request script.
 
