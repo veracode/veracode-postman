@@ -1,7 +1,7 @@
 <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/veracode/veracode.github.io/c8597dfd416f971e78936fe28922d63c2223704e/assets/images/veracode-white-hires.svg" height="200" width="200">
-    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/veracode/veracode.github.io/c8597dfd416f971e78936fe28922d63c2223704e/assets/images/veracode-black-hires.svg" height="200" width="200">
-    <img alt="Veracode Logo" src="https://raw.githubusercontent.com/veracode/veracode.github.io/c8597dfd416f971e78936fe28922d63c2223704e/assets/images/veracode-black-hires.svg" height="200" width="200">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/veracode/veracode.github.io/aed0a49cd8b08056e6093232a29f49791bf21432/assets/images/veracode-white-hires.svg" height="200" width="200">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/veracode/veracode.github.io/aed0a49cd8b08056e6093232a29f49791bf21432/assets/images/veracode-black-hires.svg" height="200" width="200">
+    <img alt="Veracode Logo" src="https://raw.githubusercontent.com/veracode/veracode.github.io/aed0a49cd8b08056e6093232a29f49791bf21432/assets/images/veracode-black-hires.svg" height="200" width="200">
 </picture>
 
 # Accessing Veracode APIs with Postman
